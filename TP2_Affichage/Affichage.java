@@ -1,12 +1,12 @@
-/**
- * 
- */
+
 import java.io.*;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.lang.String;
 
+
+ 
 class Exclusion{};
 public class Affichage extends Thread{
 	String texte; 
@@ -25,3 +25,37 @@ public class Affichage extends Thread{
 	    }
 	}
 }
+
+/**
+
+
+class Affichage extends Thread {
+    private String texte;
+    private SemaphoreBinaire sem;
+
+    public Affichage(String txt, SemaphoreBinaire s) {
+        texte = txt;
+        sem = s;
+    }
+
+    public void run() {
+        sem.syncWait(); // entrée section critique
+        System.out.println("j'entre en section critique");
+        for (int i = 0; i < texte.length(); i++) {
+            System.out.print(texte.charAt(i));
+            try { sleep(100); } catch (InterruptedException e) {}
+        }
+        System.out.println("\nje sors de section critique");
+        sem.syncSignal(); // sortie section critique
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        SemaphoreBinaire s = new SemaphoreBinaire(1);
+        new Affichage("AAA", s).start();
+        new Affichage("BB", s).start();
+    }
+}
+
+*/
