@@ -1,49 +1,87 @@
 import java.awt.*;
-import javax.swing.*;
+        import javax.swing.*;
 
 class UnMobile extends JPanel implements Runnable {
-	int saLargeur, saHauteur, sonDebDessin;
-	final int sonPas = 10, sonTemps = 50, sonCote = 40;
-	boolean enMarche = true; // <-- pour contrôler le mouvement
+    int saLargeur, saHauteur, sonDebDessin;
+    final int sonPas = 10, sonTemps = 50, sonCote = 40;
+    SemaphoreMobile semaphore;
+    int zoneDebut, zoneFin;
+    Color couleur = Color.BLACK;
 
-	UnMobile(int telleLargeur, int telleHauteur) {
-		super();
-		saLargeur = telleLargeur;
-		saHauteur = telleHauteur;
-		setSize(telleLargeur, telleHauteur);
-	}
+    UnMobile(int telleLargeur, int telleHauteur, SemaphoreMobile sem) {
+        saLargeur = telleLargeur;
+        saHauteur = telleHauteur;
+        semaphore = sem;
+        setPreferredSize(new Dimension(telleLargeur, telleHauteur));
+        zoneDebut = saLargeur / 3;
+        zoneFin = 2 * saLargeur / 3;
+        sonDebDessin = 0;
+    }
 
-	public void run() {
-		while (true) {
-			if (enMarche) { // seulement si actif
-				// Aller de gauche à droite
-				for (sonDebDessin = 0; sonDebDessin < saLargeur - sonPas; sonDebDessin += sonPas) {
-					if (!enMarche) break;
-					repaint();
-					try { Thread.sleep(sonTemps); }
-					catch (InterruptedException e) { e.printStackTrace(); }
-				}
+    public void run() {
+        while (true) {
 
-				// Retour
-				for (sonDebDessin = saLargeur - sonCote; sonDebDessin >= 0; sonDebDessin -= sonPas) {
-					if (!enMarche) break;
-					repaint();
-					try { Thread.sleep(sonTemps); }
-					catch (InterruptedException e) { e.printStackTrace(); }
-				}
-			} else {
-				try { Thread.sleep(sonTemps); }
-				catch (InterruptedException e) { e.printStackTrace(); }
-			}
-		}
-	}
+            for (int i = 0; i < zoneDebut; i += sonPas) {
+                sonDebDessin = i;
+                repaint();
+                sleep();
+            }
 
-	public void paintComponent(Graphics telCG) {
-		super.paintComponent(telCG);
-		telCG.fillRect(sonDebDessin, saHauteur / 2, sonCote, sonCote);
-	}
+            // attendre avant d'entrer dans le 2e tiers
+            semaphore.syncWait();
+            couleur = Color.BLUE;
 
-	public void toggle() { // permet d’arrêter / relancer
-		enMarche = !enMarche;
-	}
+            for (int i = zoneDebut; i < zoneFin; i += sonPas) {
+                sonDebDessin = i;
+                repaint();
+                sleep();
+            }
+            semaphore.syncSignal();
+            couleur = Color.BLACK;
+
+
+            for (int i = zoneFin; i <= saLargeur - sonCote; i += sonPas) {
+                sonDebDessin = i;
+                repaint();
+                sleep();
+            }
+
+            for (int i = saLargeur - sonCote; i > zoneFin; i -= sonPas) {
+                sonDebDessin = i;
+                repaint();
+                sleep();
+            }
+
+            // attente avant d'entrer dans le 2e tiers (5eme boucles)
+            semaphore.syncWait();
+            couleur = Color.BLUE;
+
+            for (int i = zoneFin; i > zoneDebut; i -= sonPas) {
+                sonDebDessin = i;
+                repaint();
+                sleep();
+            }
+
+            // sortie de la zone critique (en sens inverse)
+            semaphore.syncSignal();
+            couleur = Color.BLACK;
+
+            for (int i = zoneDebut; i >= 0; i -= sonPas) {
+                sonDebDessin = i;
+                repaint();
+                sleep();
+            }
+        }
+    }
+
+    private void sleep() {
+        try { Thread.sleep(sonTemps); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(couleur
+        );
+        g.fillRect(sonDebDessin, saHauteur / 2 - sonCote / 2, sonCote, sonCote);
+    }
 }
