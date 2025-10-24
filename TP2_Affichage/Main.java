@@ -6,6 +6,7 @@ import java.lang.String;
 
 public class Main {
 
+    /*
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Affichage TA = new Affichage("AAA");
@@ -20,5 +21,20 @@ public class Main {
 
 
 	}
+
+	*/
+
+
+    public static void main(String[] args) {
+
+        Semaphore sem = new SemaphoreBinaire(1);
+
+        Affichage TA = new Affichage("AAA", (SemaphoreBinaire) sem);
+        Affichage TB = new Affichage("BB", (SemaphoreBinaire) sem);
+
+        TA.start();
+        TB.start();
+
+    }
 
 }

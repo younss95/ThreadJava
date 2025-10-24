@@ -1,33 +1,29 @@
 
-import java.io.*;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.BufferedReader;
 import java.lang.String;
 
 
- 
+/*
+
 class Exclusion{};
 public class Affichage extends Thread{
-	String texte; 
-        
-     static Exclusion exclusionMutuelle = new Exclusion();
+    String texte;
 
-	public Affichage (String txt){texte=txt;}
-	
-	public void run(){
+    static Exclusion exclusionMutuelle = new Exclusion();
 
-	    synchronized (exclusionMutuelle) { //section critique
-	    for (int i=0; i<texte.length(); i++){
-		    System.out.print(texte.charAt(i));
-		    try {sleep(100);} catch(InterruptedException e){};
-		}
-	    }
-	}
+    public Affichage (String txt){texte=txt;}
+
+    public void run(){
+
+        synchronized (exclusionMutuelle) { //section critique
+            for (int i=0; i<texte.length(); i++){
+                System.out.print(texte.charAt(i));
+                try {sleep(100);} catch(InterruptedException e){};
+            }
+        }
+    }
 }
 
-/**
-
+*/
 
 class Affichage extends Thread {
     private String texte;
@@ -49,13 +45,3 @@ class Affichage extends Thread {
         sem.syncSignal(); // sortie section critique
     }
 }
-
-public class Test {
-    public static void main(String[] args) {
-        SemaphoreBinaire s = new SemaphoreBinaire(1);
-        new Affichage("AAA", s).start();
-        new Affichage("BB", s).start();
-    }
-}
-
-*/
