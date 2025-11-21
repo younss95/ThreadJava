@@ -5,6 +5,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/TP1_Mobile_src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TP2_Affichage" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/TP3_Moniteur" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
